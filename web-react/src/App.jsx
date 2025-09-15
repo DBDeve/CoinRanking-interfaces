@@ -1,0 +1,426 @@
+import {useState, useEffect } from 'react'
+import * as React from 'react';
+
+import { SparkLineChart,LineChart } from '@mui/x-charts';
+
+import './App.css';
+
+import errorLogo from '../src/assets/error-icon.png';
+
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid2';
+import Paper from '@mui/material/Paper';
+import InputBase from '@mui/material/InputBase';
+import CircularProgress from '@mui/material/CircularProgress';
+import {InputLabel,MenuItem,FormControl,Select} from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import Button from '@mui/material/Button';
+import Tooltip from '@mui/material/Tooltip';
+import Icon from '@mui/material/Icon';
+import Stack from '@mui/material/Stack';
+
+import SearchIcon from '@mui/icons-material/Search';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import TelegramIcon from '@mui/icons-material/Telegram';
+import RedditIcon from '@mui/icons-material/Reddit';
+import LanguageIcon from '@mui/icons-material/Language';
+import GitHubIcon from '@mui/icons-material/GitHub';
+import StickyNote2Icon from '@mui/icons-material/StickyNote2';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import ForumIcon from '@mui/icons-material/Forum';
+import FacebookIcon from '@mui/icons-material/Facebook';
+import YouTubeIcon from '@mui/icons-material/YouTube';
+import XIcon from '@mui/icons-material/X';
+import InstagramIcon from '@mui/icons-material/Instagram';
+import LinkedInIcon from '@mui/icons-material/LinkedIn';
+
+
+function App(){
+
+    const [timer, setTimer] = useState(0);
+
+    const [error, setError] = useState(null)   
+    const [InProgess, setInProgress] = useState(null) 
+    const [Ready, setReady] = useState(null) 
+
+
+    //console.log("rendering pagina")
+    const[history, setHistory]=useState([]);
+    const[time, setTime]=useState([]);
+    const[changeData, setChangeData]=useState('');
+    const[coinData,setCoinData]=useState(null);
+    const[coinDataLinks,setCoinDataLinks]=useState(null);
+    const[coinList, setCoinList] = useState([]);
+
+    
+
+    const[ChartPeriod, setChardPeriod]=useState('24h')//settarlo di default su 24h
+    const[IdCoin, setIdCoin]=useState("Qwsogvtv82FCd")// default setting bitcoin id code 
+
+    const[i, setI]=useState(0)
+    const[y, setY]=useState(12)
+
+    let sparkLineNumber;
+
+
+
+    const changeChartPeriod = (event) => {
+        setChardPeriod(event.target.value);
+      };
+
+    const options= {method: "GET", Headers: {
+        'Content-Type': 'application/json',
+        'x-access-token:': 'coinrankingee224b7b7075079f4747a5ba3b93cb3884bdcfe0c213d28d',
+    }}
+
+
+    async function getSparkLineChartData(){
+        
+        setError(null)
+        setReady(false)
+        setInProgress(true)
+
+        try{
+            if (!navigator.onLine){
+              throw new Error('you are offline');
+            }
+
+            let Phistory=[]
+            let Ptime=[]
+            let Lcoin=[]
+
+            await fetch(`https://api.coinranking.com/v2/coin/${IdCoin}/history?timePeriod=${ChartPeriod}`,options)
+            .then(response => { 
+                if (response.status==429){
+                    throw new Error('troppe richieste al server. aspetta un pò e riprova')
+                };
+                return response.json()}
+            )
+            .then(json => {console.log("json",json);
+                setChangeData(json.data.change);
+                json.data.history.map(value=>{
+                    if (value.price!=null){
+                        Phistory.push(Number(value.price))
+                    }
+                }), 
+                setHistory(Phistory), 
+                json.data.history.map(value=>{
+                    Ptime.push(value.timestamp)
+                }),
+                Ptime.length = Number(Phistory.length),
+                setTime(Ptime)
+                setReady(true)}
+            ) 
+
+            .catch(fetchError => {setError(fetchError)})
+            .finally(()=> {setInProgress(false)}) 
+
+            await fetch('https://api.coinranking.com/v2/coins',options)
+            .then(response => response.json())
+            .then(json => {
+                //setJson(json.data.coins); 
+                let coinL=[]
+                let dictionary={};
+                json.data.coins.map((coin)=>{
+                    coinL.push(coin)
+                    console.log('lista monete array', coinL)
+                    setCoinList(coinL)
+                });
+            })
+            .catch(fetchError => setError(fetchError))
+            .finally(()=> setInProgress(false))
+        }
+        catch(connectionerror){
+            setError(connectionerror)
+        }
+        finally{
+            setInProgress(false) 
+        }
+
+    }
+
+    async function getCoinData(){
+        
+        try{
+            
+            await fetch(`https://api.coinranking.com/v2/coin/${IdCoin}`,options)
+            .then(response => { console.log(response); return response.json()}
+            )
+            .then(json => {console.log("json coin data ",json.data.coin);setCoinData(json.data.coin);setCoinDataLinks(json.data.coin.links)}
+            ) 
+            .catch(fetchError => {setError(fetchError)})
+        }
+        catch(connectionerror){
+            setError(connectionerror)
+        }
+        finally{
+            setInProgress(false) 
+        }
+
+    }
+    useEffect(()=>{getCoinData()},[IdCoin,timer])
+    useEffect(()=>{getSparkLineChartData()},[ChartPeriod, IdCoin])
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+          setTimer(prevTimer => (prevTimer === 0 ? 1 : 0));
+        }, 5000);  
+    
+        return () => clearInterval(intervalId);  
+      }, [])
+    
+
+
+    //console.log(ChartPeriod)
+    console.log("history non return",history)
+    console.log("time non return",time)
+    console.log("coinData",coinData)
+
+
+    return (
+        
+        <Grid container spacing={3} border={5} padding={8} backgroundColor={'white'} borderRadius={10}>
+            <Grid size={{ xs: 6, md: 9 }} >
+                <Box sx={{ display: 'flex'}}>
+
+                    <Paper component="form" sx={{ p: '2px 4px', display: 'flex', alignItems: 'center'  }}>
+                
+                        <InputBase 
+                            type="text" 
+                            onKeyDown={(event)=>{
+                                if (event.key==='Enter'){
+                                    event.preventDefault();
+                                    setIdCoin(props.dictionary[`${event.target.value}`]);
+                                }
+                            }}
+                            sx={{ ml: 1, flex: 1}} 
+                            placeholder="insert krypto coin name"
+                        />
+                        <IconButton type="button" sx={{ p: '10px' }} aria-label="search" onClick={(event)=>{console.log("input value",event.target.value)}}>
+                            <SearchIcon />
+                        </IconButton>
+                    
+                    </Paper>
+
+                    <Box sx={{ minWidth: 100 }}>
+                        <FormControl fullWidth>
+                            <InputLabel id="demo-simple-select-label">time period</InputLabel>
+                            <Select
+                            disabled={InProgess? true:false}
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            value={ChartPeriod}
+                            label="time period"
+                            onChange={changeChartPeriod}
+                            >
+                                <MenuItem value={"1h"}>1h</MenuItem>
+                                <MenuItem value={"3h"}>3h</MenuItem>
+                                <MenuItem value={"12h"}>12h</MenuItem>
+                                <MenuItem value={"24h"}>24h</MenuItem>
+                                <MenuItem value={"7d"}>7d</MenuItem>
+                                <MenuItem value={"30d"}>30d</MenuItem>
+                                <MenuItem value={"3m"}>3m</MenuItem>
+                                <MenuItem value={"1y"}>1y</MenuItem>
+                                <MenuItem value={"3y"}>3y</MenuItem>
+                                <MenuItem value={"5y"}>5y</MenuItem>
+                            </Select> 
+                        </FormControl>
+                    </Box>
+
+                    
+
+                </Box>
+
+            
+                {coinData && 
+                    <div style={{display:'flex'}}>
+                        <img src={coinData.iconUrl} alt={coinData.name} style={{width: 30}}/>
+                        <h3> {coinData.name}</h3>
+                        <Tooltip sx={{fontSize:15,alignItems: 'center',marginTop:3}} title={coinData.description}>
+                            <ErrorOutlineIcon />
+                        </Tooltip>
+                    </div>
+                }
+                
+                {error &&
+                    <Box sx={{ display: 'flex', justifyContent:'center', alignItems: 'center'}} height={300} width={400}>
+                        <img src={errorLogo} alt="error" /> <br/>
+                        {error.message}
+                    </Box> 
+                }
+
+                {InProgess &&
+                <div>
+                        <Box sx={{ display: 'flex', justifyContent:'center', alignItems: 'center'}} height={300} width={400}>
+                            <CircularProgress />
+                        </Box>
+                </div>
+                }
+
+                {Ready &&
+                <LineChart 
+                        xAxis={[{ data: time, valueFormatter: time=>{
+                            if(ChartPeriod==="1h"||ChartPeriod==="3h"||ChartPeriod==="12h"||ChartPeriod==="24h"){
+                                return `${new Date (time * 1000).toLocaleTimeString('it-EU')}`
+                            } else {
+                                return `${new Date (time * 1000).toLocaleDateString('it-EU')}`
+                            };
+                            
+                        }                                
+                        }]}
+                        series={[{data: history, showMark: false,}]} 
+                        height={300} 
+                />
+                }
+
+            </Grid>
+        
+            <Grid size={{ xs: 6, md: 3}} >
+                
+                    {coinData && <Grid container spacing={2} columns={2} sx={{justifyContent: "center"}}>
+                        <Grid className="data-container" xs={1}>
+
+                            <Box sx={{display:'inline-flex',alignItems: "center"}} >
+                                <Box sx={{fontSize:11,fontWeight: "bold"}}>price (dollar)</Box>   
+                                <Tooltip sx={{fontSize:13}} title="actual price of the crypto coin">
+                                    <ErrorOutlineIcon />
+                                </Tooltip>   
+                            </Box>
+                            <Box sx={{fontSize:17, fontWeight: "bold"}}>${Number(coinData.price).toFixed(2)}</Box> 
+                        
+                        </Grid>
+
+                        <Grid className="data-container" xs={1}>
+                            <Box sx={{display:'inline-flex',alignItems: "center"}}>
+                                <Box> change ({ChartPeriod})</Box>
+                                <Tooltip sx={{fontSize:15,alignItems: 'center'}} title="percentage of the change in value of the cryptocurrency in a certain time" > 
+                                    <ErrorOutlineIcon />
+                                </Tooltip>
+                            </Box>
+                            <Box>
+                                {
+                                    changeData.search("-")? 
+                                    <Box sx={{ color:"green" }}> +{changeData}% </Box> : 
+                                    <Box sx={{ color:"red" }}> {changeData}%</Box> 
+                                }
+                            </Box> 
+                            
+                        </Grid>
+
+                        <Grid className="data-container" xs={1}>
+                            <Box sx={{display:'inline-flex',alignItems: "center"}}>
+                                <Box sx={{fontSize:13}}> most hing  </Box>
+                                <Tooltip sx={{fontSize:15,alignItems: 'center'}}title="The highest price that the coin has reached">
+                                    <ErrorOutlineIcon  />
+                                </Tooltip>
+                            </Box>
+                            <Box > {coinData.allTimeHigh.price}</Box>
+                        </Grid>
+
+                        <Grid className="data-container" xs={1}>
+                            <Box sx={{display:'inline-flex',alignItems: "center"}}>
+                                <Box sx={{fontSize:13}}>marketcap</Box>
+                                <Tooltip sx={{fontSize:15,alignItems: 'center'}} title="The total market value of a cryptocurrency's circulating supply. 
+                                It is analogous to the float-adjusted capitalization of the stock market.Market capitalization = current price x circulating supply.">
+                                    <ErrorOutlineIcon />
+                                </Tooltip>
+                            </Box>
+                            <Box >${Intl.NumberFormat().format(coinData.marketCap)}</Box>
+                        </Grid>
+
+                        <Grid className="data-container" xs={1}>
+                            <Box sx={{display:'inline-flex',alignItems: "center"}}>
+                                <Box sx={{fontSize:13}}> 24h volum </Box>
+                                <Tooltip sx={{fontSize:15,alignItems: 'center'}} title="A measure of how much a cryptocurrency has been traded in the last 24 hours.">
+                                    <ErrorOutlineIcon />
+                                </Tooltip>
+                            </Box>
+                            <Box > {coinData["24hVolume"]}</Box>
+                        </Grid>
+
+                        <Grid className="data-container" xs={1}>
+                            <Box sx={{display:'inline-flex',alignItems: "center"}}>
+                                <Box> Circulating offer </Box>
+                                <Tooltip sx={{fontSize:15,alignItems: 'center'}} title="Number of coins that are circulating in the public market">
+                                    <ErrorOutlineIcon />
+                                </Tooltip>
+                            </Box>
+                            <Box > {coinData.supply.circulating}</Box>
+                        </Grid>
+
+                        <Grid className="data-container" xs={1}>
+                            <Box sx={{display:'inline-flex',alignItems: "center"}}>
+                                <Box> Total offer</Box>
+                                <Tooltip sx={{fontSize:15,alignItems: 'center'}} title="The amount of coins that have already been created, minus any coins that have been burned">
+                                    <ErrorOutlineIcon />
+                                </Tooltip>
+                            </Box>
+                            <Box > {coinData.supply.total}</Box>
+                        </Grid>
+
+                        <Grid className="data-container" xs={2}>
+                            {coinData.supply.max!=null? 
+                                <Box>
+                                    <Box style={{display:'inline-flex'}}>
+                                        <Box> max offer</Box>
+                                            <Tooltip sx={{fontSize:15,alignItems: 'center'}} title="The maximum amount of coins that will ever exist in the lifetime of the cryptocurrency. ">
+                                                <ErrorOutlineIcon />
+                                            </Tooltip>
+                                        </Box> 
+                                    <Box > {coinData.supply.max}</Box>
+                                </Box>: null
+                            }
+                            
+                            
+                        </Grid>
+
+                        <Grid xs={2}>
+                            <Box >
+                            {console.log(coinDataLinks)}
+                            {coinDataLinks && coinDataLinks.map((link)=>(
+                                <IconButton href={link.url} sx={{border:1, borderRadius:10}}>
+                                    {link.type==="cmc"? <TrendingUpIcon fontSize="small"/>:null}
+                                    {link.type==="website"? <LanguageIcon fontSize="small"/>:null}
+                                    {link.type==="github"? <GitHubIcon fontSize="small"/>:null}
+                                    {link.type==="reddit"? <RedditIcon fontSize="small"/>:null}
+                                    {link.type==="telegram"? <TelegramIcon fontSize="small"/>:null}
+                                    {link.type==="whitepaper"? <StickyNote2Icon fontSize="small"/>:null}
+                                    {link.type==="bitcointalk"? <ForumIcon fontSize="small"/>:null}
+                                    {link.type==="facebook"? <FacebookIcon fontSize="small"/>:null}
+                                    {link.type==="youtube"? <YouTubeIcon fontSize="small"/>:null}
+                                    {link.type==="twitter"? <XIcon fontSize="small"/>:null}
+                                    {link.type==="linkedin"? <LinkedInIcon fontSize="small"/>:null}
+                                    {link.type==="instagram"? <InstagramIcon fontSize="small"/>:null}
+                                </IconButton>
+                            ))}
+                            </Box>
+                            
+                        </Grid>
+
+
+                    </Grid>}
+
+            </Grid>
+            
+            <Grid xs="auto" sx={{display:"inline-flex"}}>
+                <Button onClick={()=>{setI(i=>i-3);setY(y=>y-3)}} disabled={i==0? true:false}> <ArrowBackIosIcon/> </Button>
+                {coinList.slice(i,y).map((coin) => (
+                    sparkLineNumber=[],
+                    coin.sparkline.map((sparkData)=>{sparkLineNumber.push(Number(sparkData))}),
+                    sparkLineNumber.pop(),
+
+                    <Box display="inline-flex" flexDirection="column" alignItems='center' p={1} m={1} bordercolor={"black"} border={3} borderRadius={3} onClick={()=>{ setIdCoin(coin.uuid)}}>
+                        <img src={coin.iconUrl} alt={coin.name} style={{width: 50,height:50, }}/>
+                        {coin.symbol} 
+                        <SparkLineChart data= {sparkLineNumber} height={30} />
+                    </Box>
+                ))}
+                <Button onClick={()=>{setI(i=>i+3);setY(y=>y+3)}} disabled={y>=50? true:false}> <ArrowForwardIosIcon/> </Button>
+            </Grid>
+        </Grid>
+        
+    );
+
+} export default App
