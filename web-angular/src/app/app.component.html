@@ -1,0 +1,84 @@
+<div style="margin: 10px; border: solid black 1px;">
+  <mat-grid-list cols="4" rowHeight="300px">
+    <mat-grid-tile colspan="3">
+      <ag-charts
+        style="height: 100%"
+        [options]="chartOptions">
+      </ag-charts>
+    </mat-grid-tile>
+    <mat-grid-tile colspan="1">
+      <div style="display: flex; flex-wrap: wrap; justify-content: center;">
+
+        <mat-card appearance="outlined" style="align-items: center;">
+          <mat-card-header>
+            <mat-card-title> price (dollar)</mat-card-title>
+            <mat-card-title> {{selectedCoin['price']}}</mat-card-title>
+          </mat-card-header>
+        </mat-card>
+
+        <mat-card appearance="outlined" style="align-items: center;">
+          <mat-card-header>
+            <mat-card-title>change </mat-card-title>
+            <mat-card-title> {{selectedCoin['change']}} </mat-card-title>
+          </mat-card-header>
+        </mat-card>
+
+        <mat-card appearance="outlined" style="align-items: center;">
+          <mat-card-header>
+            <mat-card-title>most hing price</mat-card-title>
+            <mat-card-title> {{selectedCoin['mostHingPrice']}} </mat-card-title>
+          </mat-card-header>
+        </mat-card>
+
+        <mat-card appearance="outlined" style="align-items: center;">
+          <mat-card-header>
+            <mat-card-title>marketcap</mat-card-title>
+            <mat-card-title> {{selectedCoin['marketcap']}} </mat-card-title>
+          </mat-card-header>
+        </mat-card>
+
+        <mat-card appearance="outlined" style="align-items: center;">
+          <mat-card-header>
+            <mat-card-title> 24h volume </mat-card-title>
+            <mat-card-title> {{selectedCoin['24hVolume']}} </mat-card-title>
+          </mat-card-header>
+        </mat-card>
+
+        <mat-card appearance="outlined" style="align-items: center;">
+          <mat-card-header>
+            <mat-card-title> total offer </mat-card-title>
+            <mat-card-title> {{selectedCoin['totalOffer']}} </mat-card-title>
+          </mat-card-header>
+        </mat-card>
+
+        <mat-card appearance="outlined" style="align-items: center;">
+          <mat-card-header>
+            <mat-card-title>max offer</mat-card-title>
+            <mat-card-title> {{selectedCoin['maxOffer']}} </mat-card-title>
+          </mat-card-header>
+        </mat-card>
+
+      </div>
+      
+
+    </mat-grid-tile>
+
+    <mat-grid-tile colspan="4">
+
+      <button (click)="DecreaseIndex()"> indietro </button>
+
+      <div *ngFor="let coin of coinlist.slice(startIndex, endIndex)">
+        <mat-card appearance="outlined" style="align-items: center; width: 100px; height: 120px;margin:7px;" (click)="selectCoin(coin.uuid,'24h')">
+          <img mat-card-image src={{coin.icon}} alt="Photo of a Shiba Inu" style="width: 65px;padding:5px;">
+          <mat-card-header>
+            <mat-card-title>{{coin.symbol}}</mat-card-title>
+          </mat-card-header>
+        </mat-card>
+      </div>
+
+      <button (click)="IncreaseIndex()"> avanti</button>
+
+    </mat-grid-tile>
+  </mat-grid-list>
+</div>
+
