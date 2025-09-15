@@ -1,0 +1,73 @@
+# 🔧 File utente e impostazioni locali
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+.vs/
+
+# 🛠️ Cartelle di build
+bin/
+obj/
+x64/
+x86/
+ARM/
+ARM64/
+
+# 📦 File generati da MSBuild e compilazione
+*.log
+*.tlog
+*.tmp
+*.cache
+*.pdb
+*.ilk
+*.ipdb
+*.iobj
+*.pch
+*.rsp
+
+# 📁 Risultati dei test
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+
+# 📄 File di configurazione temporanei
+*.pri
+*.csproj.user
+*.dbmdl
+*.jfm
+
+# 🧪 Tool di analisi e profiling
+BenchmarkDotNet.Artifacts/
+*.psess
+*.vsp
+*.vspx
+
+# 🧹 Pulizia per WinUI specifica
+*.g.cs
+*.g.i.cs
+*.i.cs
+*.AssemblyAttributes.cs
+
+# 📚 Documentazione e scaffolding (se presente)
+ScaffoldingReadMe.txt
+wwwroot/
+
+# 🔍 ReSharper, DotCover, altri tool
+_ReSharper*/
+*.DotSettings.user
+*.dotCover
+
+# 📦 NuGet
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+project.lock.json
+artifacts/
+
+# 🧪 File temporanei di debug
+*.tmp_proj
+*.svclog
+*.scc
+*.pidb
