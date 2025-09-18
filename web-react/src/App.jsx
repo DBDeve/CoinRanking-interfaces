@@ -41,10 +41,11 @@ function App(){
 
     const [timer, setTimer] = useState(0);
 
-    const [error, setError] = useState(null)
+    //gestire la funzione che scarica il grafico e quella che scarica i dati della criptovaluta in modo separato.
+    const [errorCoin, setErrorCoin] = useState(null)
+    const [errorChartCoin,setErrorChartCoin] = useState(null)
     const [InProgess, setInProgress] = useState(null)
     const [Ready, setReady] = useState(null) 
-
 
     //console.log("rendering pagina")
     const[history, setHistory]=useState([]);
@@ -54,15 +55,13 @@ function App(){
     const[coinDataLinks,setCoinDataLinks]=useState(null);
     const[coinList, setCoinList] = useState([]);
 
-    
-
     const[ChartPeriod, setChardPeriod]=useState('24h')//settarlo di default su 24h
     const[IdCoin, setIdCoin]=useState("Qwsogvtv82FCd")// default setting bitcoin id code 
 
     const[i, setI]=useState(0)
-    const isMobile = window.innerWidth <= 768;
-    const[y, setY]=useState(isMobile? 3:12)
+    const[y, setY]=useState(11)
 
+    const isMobile = window.innerWidth <= 768;
     let sparkLineNumber;
 
 
@@ -79,7 +78,7 @@ function App(){
 
     async function getSparkLineChartData(){
         
-        setError(null)
+        setErrorChartCoin(null)
         setReady(false)
         setInProgress(true)
 
@@ -99,7 +98,8 @@ function App(){
                 };
                 return response.json()}
             )
-            .then(json => {console.log("json",json);
+            .then(json => {
+                console.log("json getSparkLineChartData",json);
                 setChangeData(json.data.change);
                 json.data.history.map(value=>{
                     if (value.price!=null){
@@ -113,27 +113,10 @@ function App(){
                 Ptime.length = Number(Phistory.length),
                 setTime(Ptime)
                 setReady(true)
-                setError(null)
-            }
+                }
             ) 
-
-            .catch(fetchError => {setError(fetchError)})
+            .catch(fetchError => {setErrorChartCoin(fetchError)})
             .finally(()=> {setInProgress(false)}) 
-
-            await fetch('https://api.coinranking.com/v2/coins',options)
-            .then(response => response.json())
-            .then(json => {
-                //setJson(json.data.coins); 
-                let coinL=[]
-                let dictionary={};
-                json.data.coins.map((coin)=>{
-                    coinL.push(coin)
-                    console.log('lista monete array', coinL)
-                    setCoinList(coinL)
-                });
-            })
-            .catch(fetchError => setError(fetchError))
-            .finally(()=> setInProgress(false))
         }
         catch(connectionerror){
             setError(connectionerror)
@@ -146,8 +129,7 @@ function App(){
 
     async function getCoinData(){
 
-        setError(null)
-        setReady(false)
+        setErrorCoin(null)
         setInProgress(true)
         
         try{
@@ -155,28 +137,52 @@ function App(){
             await fetch(`https://api.coinranking.com/v2/coin/${IdCoin}`,options)
             .then(response => { console.log(response); return response.json()}
             )
-            .then(json => {console.log("json coin data ",json.data.coin);setCoinData(json.data.coin);setCoinDataLinks(json.data.coin.links),setReady(true),setError(null)}
+            .then(json => {console.log("json coin data ",json.data.coin);setCoinData(json.data.coin);setCoinDataLinks(json.data.coin.links)}
             ) 
-            .catch(fetchError => {setError(fetchError)})
+            .catch(fetchError => {setErrorCoin(fetchError)})
         }
         catch(connectionerror){
-            setError(connectionerror)
+            setErrorCoin(connectionerror)
         }
         finally{
             setInProgress(false) 
         }
 
     }
-    useEffect(()=>{getCoinData()},[IdCoin,timer])
+
+    async function getCoinsList(){
+        await fetch('https://api.coinranking.com/v2/coins',options)
+        .then(response => response.json())
+        .then(json => {
+            //setJson(json.data.coins); 
+            let coinL=[]
+            json.data.coins.map((coin)=>{
+                coinL.push(coin)
+                console.log('lista monete array', coinL)
+                setCoinList(coinL)
+            });
+        })
+        .catch(fetchError => setError(fetchError))
+    }
+
+    
+    useEffect(()=>{getCoinData()},[IdCoin])
+
     useEffect(()=>{getSparkLineChartData()},[ChartPeriod, IdCoin])
 
-    useEffect(() => {
+    useEffect(()=>{getCoinsList()},[])
+
+    /*useEffect(()=>{getCoinData()},[IdCoin,timer])*/
+
+    /*useEffect(()=>{getSparkLineChartData()},[ChartPeriod, IdCoin,timer])*/
+
+    /*useEffect(() => {
         const intervalId = setInterval(() => {
           setTimer(prevTimer => (prevTimer === 0 ? 1 : 0));
         }, 5000);  
     
         return () => clearInterval(intervalId);  
-      }, [])
+    }, [])*/
     
 
 
@@ -251,10 +257,11 @@ function App(){
                     </div>
                 }
                 
-                {error &&
+                {((errorCoin && errorChartCoin)|| errorChartCoin) &&
                     <Box sx={{ display: 'flex', justifyContent:'center', alignItems: 'center'}} height={300} width={400}>
                         <img src={errorLogo} alt="error" /> <br/>
-                        {error.message}
+                        {errorChartCoin && errorChartCoin.message}
+                        {errorCoin && errorCoin.message}
                     </Box> 
                 }
 
@@ -446,7 +453,7 @@ function App(){
                                 <Box sx={{display:"flex",flexDirection:{ xs: 'row', md: 'column' }}} alignItems='center' p={1} m={1} bordercolor={"black"} border={3} borderRadius={3} onClick={()=>{ setIdCoin(coin.uuid)}}>
                                     <img src={coin.iconUrl} alt={coin.name} style={{width: 50,height:50, }}/>
                                     {coin.symbol} 
-                                    <SparkLineChart data= {sparkLineNumber} height={30} />
+                                    <SparkLineChart data={sparkLineNumber} height={30} />
                                 </Box>
                             ))}
                         </Box>
