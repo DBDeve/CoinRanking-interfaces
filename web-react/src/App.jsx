@@ -41,8 +41,8 @@ function App(){
 
     const [timer, setTimer] = useState(0);
 
-    const [error, setError] = useState(null)   
-    const [InProgess, setInProgress] = useState(null) 
+    const [error, setError] = useState(null)
+    const [InProgess, setInProgress] = useState(null)
     const [Ready, setReady] = useState(null) 
 
 
@@ -112,7 +112,9 @@ function App(){
                 }),
                 Ptime.length = Number(Phistory.length),
                 setTime(Ptime)
-                setReady(true)}
+                setReady(true)
+                setError(null)
+            }
             ) 
 
             .catch(fetchError => {setError(fetchError)})
@@ -303,8 +305,8 @@ function App(){
                             <Box>
                                 {
                                     changeData.search("-")? 
-                                    <Box sx={{ color:"green" }}> +{changeData}% </Box> : 
-                                    <Box sx={{ color:"red" }}> {changeData}%</Box> 
+                                    <Box sx={{ color:"green",fontSize:17, fontWeight: "bold"}}> +{changeData}% </Box> : 
+                                    <Box sx={{ color:"red",fontSize:17, fontWeight: "bold" }}> {changeData}%</Box> 
                                 }
                             </Box> 
                             
@@ -317,7 +319,7 @@ function App(){
                                     <ErrorOutlineIcon  />
                                 </Tooltip>
                             </Box>
-                            <Box > {coinData.allTimeHigh.price}</Box>
+                            <Box sx={{fontSize:17, fontWeight: "bold"}}> {coinData.allTimeHigh.price}</Box>
                         </Grid>
 
                         <Grid className="data-container" xs={1}>
@@ -328,7 +330,7 @@ function App(){
                                     <ErrorOutlineIcon />
                                 </Tooltip>
                             </Box>
-                            <Box >${Intl.NumberFormat().format(coinData.marketCap)}</Box>
+                            <Box sx={{fontSize:17, fontWeight: "bold"}}>${Intl.NumberFormat().format(coinData.marketCap)}</Box>
                         </Grid>
 
                         <Grid className="data-container" xs={1}>
@@ -338,7 +340,7 @@ function App(){
                                     <ErrorOutlineIcon />
                                 </Tooltip>
                             </Box>
-                            <Box > {coinData["24hVolume"]}</Box>
+                            <Box sx={{fontSize:17, fontWeight: "bold"}}> {coinData["24hVolume"]}</Box>
                         </Grid>
 
                         <Grid className="data-container" xs={1}>
@@ -348,7 +350,7 @@ function App(){
                                     <ErrorOutlineIcon />
                                 </Tooltip>
                             </Box>
-                            <Box > {coinData.supply.circulating}</Box>
+                            <Box sx={{fontSize:17, fontWeight: "bold"}}> {coinData.supply.circulating}</Box>
                         </Grid>
 
                         <Grid className="data-container" xs={1}>
@@ -358,11 +360,10 @@ function App(){
                                     <ErrorOutlineIcon />
                                 </Tooltip>
                             </Box>
-                            <Box > {coinData.supply.total}</Box>
+                            <Box sx={{fontSize:17, fontWeight: "bold"}}> {coinData.supply.total}</Box>
                         </Grid>
-
-                        <Grid className="data-container" xs={2}>
-                            {coinData.supply.max!=null? 
+                        {coinData.supply.max!=null? 
+                            <Grid className="data-container" xs={2}>
                                 <Box>
                                     <Box style={{display:'inline-flex'}}>
                                         <Box sx={{fontSize:11,fontWeight: "bold"}}> max offer</Box>
@@ -370,36 +371,61 @@ function App(){
                                                 <ErrorOutlineIcon />
                                             </Tooltip>
                                         </Box> 
-                                    <Box > {coinData.supply.max}</Box>
-                                </Box>: null
-                            }
-                            
-                            
-                        </Grid>
+                                    <Box sx={{fontSize:17, fontWeight: "bold"}}> {coinData.supply.max}</Box>
+                                </Box>
+                            </Grid>: null
+                        }
 
                         <Grid xs={2}>
                             <Box >
-                            {console.log(coinDataLinks)}
-                            {coinDataLinks && coinDataLinks.map((link)=>(
-                                <IconButton href={link.url} sx={{border:1, borderRadius:10}}>
-                                    {link.type==="cmc"? <TrendingUpIcon fontSize="small"/>:null}
-                                    {link.type==="website"? <LanguageIcon fontSize="small"/>:null}
-                                    {link.type==="github"? <GitHubIcon fontSize="small"/>:null}
-                                    {link.type==="reddit"? <RedditIcon fontSize="small"/>:null}
-                                    {link.type==="telegram"? <TelegramIcon fontSize="small"/>:null}
-                                    {link.type==="whitepaper"? <StickyNote2Icon fontSize="small"/>:null}
-                                    {link.type==="bitcointalk"? <ForumIcon fontSize="small"/>:null}
-                                    {link.type==="facebook"? <FacebookIcon fontSize="small"/>:null}
-                                    {link.type==="youtube"? <YouTubeIcon fontSize="small"/>:null}
-                                    {link.type==="twitter"? <XIcon fontSize="small"/>:null}
-                                    {link.type==="linkedin"? <LinkedInIcon fontSize="small"/>:null}
-                                    {link.type==="instagram"? <InstagramIcon fontSize="small"/>:null}
-                                </IconButton>
-                            ))}
+                                {console.log(coinDataLinks)}
+                                {coinDataLinks && coinDataLinks.map((link)=>{
+                                    if (link.type === "cmc") {
+                                        return (
+                                        <IconButton href={link.url} sx={{ border: 1, borderRadius: 10 }}>
+                                            <TrendingUpIcon fontSize="small" />
+                                        </IconButton>
+                                    )}
+                                    if (link.type === "websites") {
+                                        return (
+                                        <IconButton href={link.url} sx={{ border: 1, borderRadius: 10 }}>
+                                            <LanguageIcon fontSize="small" />
+                                        </IconButton>
+                                    )}
+                                    if (link.type === "github") {
+                                        return (
+                                        <IconButton href={link.url} sx={{ border: 1, borderRadius: 10 }}>
+                                            <GitHubIcon fontSize="small" />
+                                        </IconButton>
+                                    )}
+                                    if (link.type === "reddit") {
+                                        return (
+                                        <IconButton href={link.url} sx={{ border: 1, borderRadius: 10 }}>
+                                            <RedditIcon fontSize="small" />
+                                        </IconButton>
+                                    )}
+                                    if (link.type === "telegram") {
+                                        return (
+                                        <IconButton href={link.url} sx={{ border: 1, borderRadius: 10 }}>
+                                            <TelegramIcon fontSize="small" />
+                                        </IconButton>
+                                    )}
+                                    if (link.type === "whitepaper") {
+                                        return (
+                                        <IconButton href={link.url} sx={{ border: 1, borderRadius: 10 }}>
+                                            <tickyNote2Icon fontSize="small" />
+                                        </IconButton>
+                                    )}
+                                    if (link.type === "facebook") {
+                                        return (
+                                        <IconButton href={link.url} sx={{ border: 1, borderRadius: 10 }}>
+                                            <FacebookIcon fontSize="small" />
+                                        </IconButton>
+                                    )}
+                                })}
                             </Box>
                             
                         </Grid>
-
 
                     </Grid>}
             </Grid>
