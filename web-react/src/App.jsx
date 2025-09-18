@@ -295,7 +295,7 @@ function App(){
 
                         <Grid className="data-container" xs={1}>
                             <Box sx={{display:'inline-flex',alignItems: "center"}}>
-                                <Box> change ({ChartPeriod})</Box>
+                                <Box sx={{fontSize:11,fontWeight: "bold"}}> change ({ChartPeriod})</Box>
                                 <Tooltip sx={{fontSize:15,alignItems: 'center'}} title="percentage of the change in value of the cryptocurrency in a certain time" > 
                                     <ErrorOutlineIcon />
                                 </Tooltip>
@@ -312,7 +312,7 @@ function App(){
 
                         <Grid className="data-container" xs={1}>
                             <Box sx={{display:'inline-flex',alignItems: "center"}}>
-                                <Box sx={{fontSize:13}}> most hing  </Box>
+                                <Box sx={{fontSize:11,fontWeight: "bold"}}> most hing  </Box>
                                 <Tooltip sx={{fontSize:15,alignItems: 'center'}}title="The highest price that the coin has reached">
                                     <ErrorOutlineIcon  />
                                 </Tooltip>
@@ -322,7 +322,7 @@ function App(){
 
                         <Grid className="data-container" xs={1}>
                             <Box sx={{display:'inline-flex',alignItems: "center"}}>
-                                <Box sx={{fontSize:13}}>marketcap</Box>
+                                <Box sx={{fontSize:11,fontWeight: "bold"}}>marketcap</Box>
                                 <Tooltip sx={{fontSize:15,alignItems: 'center'}} title="The total market value of a cryptocurrency's circulating supply. 
                                 It is analogous to the float-adjusted capitalization of the stock market.Market capitalization = current price x circulating supply.">
                                     <ErrorOutlineIcon />
@@ -333,7 +333,7 @@ function App(){
 
                         <Grid className="data-container" xs={1}>
                             <Box sx={{display:'inline-flex',alignItems: "center"}}>
-                                <Box sx={{fontSize:13}}> 24h volum </Box>
+                                <Box sx={{fontSize:11,fontWeight: "bold"}}> 24h volum </Box>
                                 <Tooltip sx={{fontSize:15,alignItems: 'center'}} title="A measure of how much a cryptocurrency has been traded in the last 24 hours.">
                                     <ErrorOutlineIcon />
                                 </Tooltip>
@@ -343,7 +343,7 @@ function App(){
 
                         <Grid className="data-container" xs={1}>
                             <Box sx={{display:'inline-flex',alignItems: "center"}}>
-                                <Box> Circulating offer </Box>
+                                <Box sx={{fontSize:11,fontWeight: "bold"}}> Circulating offer </Box>
                                 <Tooltip sx={{fontSize:15,alignItems: 'center'}} title="Number of coins that are circulating in the public market">
                                     <ErrorOutlineIcon />
                                 </Tooltip>
@@ -353,7 +353,7 @@ function App(){
 
                         <Grid className="data-container" xs={1}>
                             <Box sx={{display:'inline-flex',alignItems: "center"}}>
-                                <Box> Total offer</Box>
+                                <Box sx={{fontSize:11,fontWeight: "bold"}}> Total offer</Box>
                                 <Tooltip sx={{fontSize:15,alignItems: 'center'}} title="The amount of coins that have already been created, minus any coins that have been burned">
                                     <ErrorOutlineIcon />
                                 </Tooltip>
@@ -365,7 +365,7 @@ function App(){
                             {coinData.supply.max!=null? 
                                 <Box>
                                     <Box style={{display:'inline-flex'}}>
-                                        <Box> max offer</Box>
+                                        <Box sx={{fontSize:11,fontWeight: "bold"}}> max offer</Box>
                                             <Tooltip sx={{fontSize:15,alignItems: 'center'}} title="The maximum amount of coins that will ever exist in the lifetime of the cryptocurrency. ">
                                                 <ErrorOutlineIcon />
                                             </Tooltip>
