@@ -139,19 +139,23 @@ function App(){
             setError(connectionerror)
         }
         finally{
-            setInProgress(false) 
+            setInProgress(false)
         }
 
     }
 
     async function getCoinData(){
+
+        setError(null)
+        setReady(false)
+        setInProgress(true)
         
         try{
             
             await fetch(`https://api.coinranking.com/v2/coin/${IdCoin}`,options)
             .then(response => { console.log(response); return response.json()}
             )
-            .then(json => {console.log("json coin data ",json.data.coin);setCoinData(json.data.coin);setCoinDataLinks(json.data.coin.links)}
+            .then(json => {console.log("json coin data ",json.data.coin);setCoinData(json.data.coin);setCoinDataLinks(json.data.coin.links),setReady(true),setError(null)}
             ) 
             .catch(fetchError => {setError(fetchError)})
         }
@@ -238,10 +242,10 @@ function App(){
 
             
                 {coinData && 
-                    <div style={{display:'flex'}}>
-                        <img src={coinData.iconUrl} alt={coinData.name} style={{width: 30}}/>
+                    <div style={{display:'flex',alignItems: 'center'}}>
+                        <img src={coinData.iconUrl} alt={coinData.name} style={{width: 50, height:50}}/>
                         <h3> {coinData.name}</h3>
-                        <Tooltip sx={{fontSize:15,alignItems: 'center',marginTop:3}} title={coinData.description}>
+                        <Tooltip sx={{fontSize:15}} title={coinData.description}>
                             <ErrorOutlineIcon />
                         </Tooltip>
                     </div>
@@ -256,25 +260,25 @@ function App(){
 
                 {InProgess &&
                 <div>
-                        <Box sx={{ display: 'flex', justifyContent:'center', alignItems: 'center'}} height={300} width={400}>
-                            <CircularProgress />
-                        </Box>
+                    <Box sx={{ display: 'flex', justifyContent:'center', alignItems: 'center'}} height={300} width={400}>
+                        <CircularProgress />
+                    </Box>
                 </div>
                 }
 
                 {Ready &&
                 <LineChart 
-                        xAxis={[{ data: time, valueFormatter: time=>{
-                            if(ChartPeriod==="1h"||ChartPeriod==="3h"||ChartPeriod==="12h"||ChartPeriod==="24h"){
-                                return `${new Date (time * 1000).toLocaleTimeString('it-EU')}`
-                            } else {
-                                return `${new Date (time * 1000).toLocaleDateString('it-EU')}`
-                            };
-                            
-                        }                                
-                        }]}
-                        series={[{data: history, showMark: false,}]} 
-                        height={300} 
+                    xAxis={[{ data: time, valueFormatter: time=>{
+                        if(ChartPeriod==="1h"||ChartPeriod==="3h"||ChartPeriod==="12h"||ChartPeriod==="24h"){
+                            return `${new Date (time * 1000).toLocaleTimeString('it-EU')}`
+                        } else {
+                            return `${new Date (time * 1000).toLocaleDateString('it-EU')}`
+                        };
+                        
+                    }                                
+                    }]}
+                    series={[{ data: history, showMark: false }]}
+                    height={300} 
                 />
                 }
 
