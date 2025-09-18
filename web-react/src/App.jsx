@@ -60,7 +60,8 @@ function App(){
     const[IdCoin, setIdCoin]=useState("Qwsogvtv82FCd")// default setting bitcoin id code 
 
     const[i, setI]=useState(0)
-    const[y, setY]=useState(12)
+    const isMobile = window.innerWidth <= 768;
+    const[y, setY]=useState(isMobile? 3:12)
 
     let sparkLineNumber;
 
@@ -181,8 +182,8 @@ function App(){
 
     return (
         
-        <Grid container spacing={3} border={5} padding={8} backgroundColor={'white'} borderRadius={10}>
-            <Grid size={{ xs: 6, md: 9 }} >
+        <Grid container spacing={3} border={5} padding={isMobile? 2: 8} backgroundColor={'white'} borderRadius={10}>
+            <Grid size={{ xs: 12, md: 9 }} >
                 <Box sx={{ display: 'flex'}}>
 
                     <Paper component="form" sx={{ p: '2px 4px', display: 'flex', alignItems: 'center'  }}>
@@ -277,7 +278,7 @@ function App(){
 
             </Grid>
         
-            <Grid size={{ xs: 6, md: 3}} >
+            <Grid size={{ xs: 12, md: 3}} >
                 
                     {coinData && <Grid container spacing={2} columns={2} sx={{justifyContent: "center"}}>
                         <Grid className="data-container" xs={1}>
@@ -401,23 +402,26 @@ function App(){
 
 
                     </Grid>}
-
             </Grid>
             
-            <Grid xs="auto" sx={{display:"inline-flex"}}>
-                <Button onClick={()=>{setI(i=>i-3);setY(y=>y-3)}} disabled={i==0? true:false}> <ArrowBackIosIcon/> </Button>
-                {coinList.slice(i,y).map((coin) => (
-                    sparkLineNumber=[],
-                    coin.sparkline.map((sparkData)=>{sparkLineNumber.push(Number(sparkData))}),
-                    sparkLineNumber.pop(),
+            <Grid size={12}>
+                <Box display={'flex'} justifyContent={'center'}> 
+                    <Button onClick={()=>{setI(i=>i-3);setY(y=>y-3)}} disabled={i==0? true:false}> <ArrowBackIosIcon/> </Button>
+                        <Box sx={{display: 'flex',flexDirection: 'row' , justifyContent: 'center', flexWrap: 'wrap'}}>
+                            {coinList.slice(i,y).map((coin) => (
+                                sparkLineNumber=[],
+                                coin.sparkline.map((sparkData)=>{sparkLineNumber.push(Number(sparkData))}),
+                                sparkLineNumber.pop(),
 
-                    <Box display="inline-flex" flexDirection="column" alignItems='center' p={1} m={1} bordercolor={"black"} border={3} borderRadius={3} onClick={()=>{ setIdCoin(coin.uuid)}}>
-                        <img src={coin.iconUrl} alt={coin.name} style={{width: 50,height:50, }}/>
-                        {coin.symbol} 
-                        <SparkLineChart data= {sparkLineNumber} height={30} />
-                    </Box>
-                ))}
-                <Button onClick={()=>{setI(i=>i+3);setY(y=>y+3)}} disabled={y>=50? true:false}> <ArrowForwardIosIcon/> </Button>
+                                <Box sx={{display:"flex",flexDirection:{ xs: 'row', md: 'column' }}} alignItems='center' p={1} m={1} bordercolor={"black"} border={3} borderRadius={3} onClick={()=>{ setIdCoin(coin.uuid)}}>
+                                    <img src={coin.iconUrl} alt={coin.name} style={{width: 50,height:50, }}/>
+                                    {coin.symbol} 
+                                    <SparkLineChart data= {sparkLineNumber} height={30} />
+                                </Box>
+                            ))}
+                        </Box>
+                    <Button onClick={()=>{setI(i=>i+3);setY(y=>y+3)}} disabled={y>=50? true:false}> <ArrowForwardIosIcon/> </Button>
+                </Box>
             </Grid>
         </Grid>
         
