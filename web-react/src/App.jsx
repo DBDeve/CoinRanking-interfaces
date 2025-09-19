@@ -44,8 +44,12 @@ function App(){
     //gestire la funzione che scarica il grafico e quella che scarica i dati della criptovaluta in modo separato.
     const [errorCoin, setErrorCoin] = useState(null)
     const [errorChartCoin,setErrorChartCoin] = useState(null)
+    const [errorConnection, setErrorConnection] = useState(null)
     const [InProgess, setInProgress] = useState(null)
-    const [Ready, setReady] = useState(null) 
+
+    const [ReadyCoin, setReadyCoin] = useState(null)
+    const [ReadyChartCoin, setReadyChartCoin] = useState(null)
+    
 
     //console.log("rendering pagina")
     const[history, setHistory]=useState([]);
@@ -59,7 +63,7 @@ function App(){
     const[IdCoin, setIdCoin]=useState("Qwsogvtv82FCd")// default setting bitcoin id code 
 
     const[i, setI]=useState(0)
-    const[y, setY]=useState(11)
+    const[y, setY]=useState(9)
 
     const isMobile = window.innerWidth <= 768;
     let sparkLineNumber;
@@ -79,7 +83,7 @@ function App(){
     async function getSparkLineChartData(){
         
         setErrorChartCoin(null)
-        setReady(false)
+        setReadyChartCoin(false)
         setInProgress(true)
 
         try{
@@ -94,7 +98,7 @@ function App(){
             await fetch(`https://api.coinranking.com/v2/coin/${IdCoin}/history?timePeriod=${ChartPeriod}`,options)
             .then(response => { 
                 if (response.status==429){
-                    throw new Error('troppe richieste al server. aspetta un pò e riprova')
+                    throw new Error('non è stato possibile scaricare i dati del grafico.')
                 };
                 return response.json()}
             )
@@ -112,14 +116,14 @@ function App(){
                 }),
                 Ptime.length = Number(Phistory.length),
                 setTime(Ptime)
-                setReady(true)
+                setReadyChartCoin(true)
                 }
             ) 
             .catch(fetchError => {setErrorChartCoin(fetchError)})
             .finally(()=> {setInProgress(false)}) 
         }
-        catch(connectionerror){
-            setError(connectionerror)
+        catch(connectionError){
+            setErrorConnection(connectionError)
         }
         finally{
             setInProgress(false)
@@ -130,19 +134,28 @@ function App(){
     async function getCoinData(){
 
         setErrorCoin(null)
+        setReadyCoin(false)
         setInProgress(true)
         
         try{
+
+            if (!navigator.onLine){
+              throw new Error('you are offline');
+            }
             
             await fetch(`https://api.coinranking.com/v2/coin/${IdCoin}`,options)
-            .then(response => { console.log(response); return response.json()}
-            )
-            .then(json => {console.log("json coin data ",json.data.coin);setCoinData(json.data.coin);setCoinDataLinks(json.data.coin.links)}
+            .then(response => { 
+                if (response.status==429){
+                    throw new Error('non è stato possibile scaricare i dati della criptovaluta.')
+                };
+                return response.json()
+            })
+            .then(json => {console.log("json coin data ",json.data.coin);setCoinData(json.data.coin);setCoinDataLinks(json.data.coin.links), setReadyCoin(true)}
             ) 
             .catch(fetchError => {setErrorCoin(fetchError)})
         }
         catch(connectionerror){
-            setErrorCoin(connectionerror)
+            setErrorConnection(connectionerror)
         }
         finally{
             setInProgress(false) 
@@ -247,7 +260,7 @@ function App(){
                 </Box>
 
             
-                {coinData && 
+                {ReadyCoin && 
                     <div style={{display:'flex',alignItems: 'center'}}>
                         <img src={coinData.iconUrl} alt={coinData.name} style={{width: 50, height:50}}/>
                         <h3> {coinData.name}</h3>
@@ -257,43 +270,44 @@ function App(){
                     </div>
                 }
                 
-                {((errorCoin && errorChartCoin)|| errorChartCoin) &&
-                    <Box sx={{ display: 'flex', justifyContent:'center', alignItems: 'center'}} height={300} width={400}>
+                {((errorCoin && errorChartCoin)|| errorChartCoin || errorConnection) &&
+                    <Box sx={{ display: 'flex', justifyContent:'center', alignItems: 'center'}} height={300} width={'auto'}>
                         <img src={errorLogo} alt="error" /> <br/>
-                        {errorChartCoin && errorChartCoin.message}
-                        {errorCoin && errorCoin.message}
+                        {errorChartCoin && errorChartCoin.message} <br/>
+                        {errorCoin && errorCoin.message} <br/>
+                        {errorConnection && errorConnection.message}
+                        'Please try again later'
                     </Box> 
                 }
 
                 {InProgess &&
-                <div>
-                    <Box sx={{ display: 'flex', justifyContent:'center', alignItems: 'center'}} height={300} width={400}>
-                        <CircularProgress />
-                    </Box>
-                </div>
+                    <div>
+                        <Box sx={{ display: 'flex', justifyContent:'center', alignItems: 'center'}} height={300} width={400}>
+                            <CircularProgress />
+                        </Box>
+                    </div>
                 }
 
-                {Ready &&
-                <LineChart 
-                    xAxis={[{ data: time, valueFormatter: time=>{
-                        if(ChartPeriod==="1h"||ChartPeriod==="3h"||ChartPeriod==="12h"||ChartPeriod==="24h"){
-                            return `${new Date (time * 1000).toLocaleTimeString('it-EU')}`
-                        } else {
-                            return `${new Date (time * 1000).toLocaleDateString('it-EU')}`
-                        };
-                        
-                    }                                
-                    }]}
-                    series={[{ data: history, showMark: false }]}
-                    height={300} 
-                />
+                {ReadyChartCoin &&
+                    <LineChart 
+                        xAxis={[{ data: time, valueFormatter: time=>{
+                            if(ChartPeriod==="1h"||ChartPeriod==="3h"||ChartPeriod==="12h"||ChartPeriod==="24h"){
+                                return `${new Date (time * 1000).toLocaleTimeString('it-EU')}`
+                            } else {
+                                return `${new Date (time * 1000).toLocaleDateString('it-EU')}`
+                            };
+                        }                                
+                        }]}
+                        series={[{ data: history, showMark: false }]}
+                        height={300} 
+                    />
                 }
 
             </Grid>
         
             <Grid size={{ xs: 12, md: 3}} >
                 
-                    {coinData && <Grid container spacing={2} columns={2} sx={{justifyContent: "center"}}>
+                    {ReadyCoin && <Grid container spacing={2} columns={2} sx={{justifyContent: "center"}}>
                         <Grid className="data-container" xs={1}>
 
                             <Box sx={{display:'inline-flex',alignItems: "center"}} >
@@ -439,6 +453,15 @@ function App(){
                         </Grid>
 
                     </Grid>}
+
+                    {(errorCoin && !errorChartCoin) &&
+                        <Box sx={{ display: 'flex', justifyContent:'center', alignItems: 'center'}} height={300} width={'auto'}>
+                            <img src={errorLogo} alt="error"/> <br/>
+                            {errorCoin && errorCoin.message} <br/>
+                            'Please try again later'
+                        </Box> 
+                    }
+                    
             </Grid>
             
             <Grid size={12}>
@@ -449,7 +472,6 @@ function App(){
                                 sparkLineNumber=[],
                                 coin.sparkline.map((sparkData)=>{sparkLineNumber.push(Number(sparkData))}),
                                 sparkLineNumber.pop(),
-
                                 <Box sx={{display:"flex",flexDirection:{ xs: 'row', md: 'column' }}} alignItems='center' p={1} m={1} bordercolor={"black"} border={3} borderRadius={3} onClick={()=>{ setIdCoin(coin.uuid)}}>
                                     <img src={coin.iconUrl} alt={coin.name} style={{width: 50,height:50, }}/>
                                     {coin.symbol} 
@@ -460,6 +482,7 @@ function App(){
                     <Button onClick={()=>{setI(i=>i+3);setY(y=>y+3)}} disabled={y>=50? true:false}> <ArrowForwardIosIcon/> </Button>
                 </Box>
             </Grid>
+
         </Grid>
         
     );
