@@ -178,6 +178,52 @@ function App(){
         .catch(fetchError => setError(fetchError))
     }
 
+
+    async function updateCoinTime(){
+
+        let Phistory=[];
+        let Ptime=[];
+
+        await fetch(`https://api.coinranking.com/v2/coin/${IdCoin}`,options)
+        .then(response => { 
+            if (response.status==429){
+                throw new Error('non è stato possibile scaricare i dati della criptovaluta.')
+            };
+            return response.json()
+        })
+        .then(json => {console.log("json coin data ",json.data.coin);setCoinData(json.data.coin);setCoinDataLinks(json.data.coin.links), setReadyCoin(true)}
+        ) 
+
+
+        await fetch(`https://api.coinranking.com/v2/coin/${IdCoin}/history?timePeriod=${ChartPeriod}`,options)
+        .then(response => { 
+            if (response.status==429){
+                throw new Error('non è stato possibile scaricare i dati del grafico.')
+            };
+            return response.json()}
+        )
+        .then(json => {
+
+            setChangeData(json.data.change);
+            
+            json.data.history.map(value=>{
+                if (value.price!=null){
+                    Phistory.push(Number(value.price))
+                }
+            }), 
+            setHistory(Phistory), 
+
+            json.data.history.map(value=>{
+                Ptime.push(value.timestamp)
+            }),
+            Ptime.length = Number(Phistory.length),
+            setTime(Ptime)
+
+            }
+        ) 
+
+    }
+
     
     useEffect(()=>{getCoinData()},[IdCoin])
 
@@ -185,17 +231,15 @@ function App(){
 
     useEffect(()=>{getCoinsList()},[])
 
-    /*useEffect(()=>{getCoinData()},[IdCoin,timer])*/
+    useEffect(()=>{updateCoinTime()},[timer])
 
-    /*useEffect(()=>{getSparkLineChartData()},[ChartPeriod, IdCoin,timer])*/
-
-    /*useEffect(() => {
+    useEffect(() => {
         const intervalId = setInterval(() => {
           setTimer(prevTimer => (prevTimer === 0 ? 1 : 0));
         }, 5000);  
     
         return () => clearInterval(intervalId);  
-    }, [])*/
+    }, [])
     
 
 
