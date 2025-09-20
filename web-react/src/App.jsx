@@ -191,7 +191,7 @@ function App(){
             };
             return response.json()
         })
-        .then(json => {console.log("json coin data ",json.data.coin);setCoinData(json.data.coin);setCoinDataLinks(json.data.coin.links), setReadyCoin(true)}
+        .then(json => {console.log("json coin data ",json.data.coin);setCoinData(json.data.coin);setCoinDataLinks(json.data.coin.links), setReadyCoin(true), setErrorCoin(null)}
         ) 
 
 
@@ -210,14 +210,17 @@ function App(){
                 if (value.price!=null){
                     Phistory.push(Number(value.price))
                 }
-            }), 
-            setHistory(Phistory), 
+            });
+            setHistory(Phistory);
 
             json.data.history.map(value=>{
                 Ptime.push(value.timestamp)
-            }),
+            });
             Ptime.length = Number(Phistory.length),
-            setTime(Ptime)
+            setTime(Ptime);
+
+            setReadyChartCoin(true);
+            setErrorChartCoin(null);
 
             }
         ) 
