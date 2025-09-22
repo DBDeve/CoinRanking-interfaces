@@ -62,10 +62,11 @@ function App(){
     const[ChartPeriod, setChardPeriod]=useState('24h')//settarlo di default su 24h
     const[IdCoin, setIdCoin]=useState("Qwsogvtv82FCd")// default setting bitcoin id code 
 
-    const[i, setI]=useState(0)
-    const[y, setY]=useState(9)
-
     const isMobile = window.innerWidth <= 768;
+    const[i, setI]=useState(0)
+    const[y, setY]=useState(isMobile? 3 : 9)
+
+    
     let sparkLineNumber;
 
 
@@ -98,7 +99,7 @@ function App(){
             await fetch(`https://api.coinranking.com/v2/coin/${IdCoin}/history?timePeriod=${ChartPeriod}`,options)
             .then(response => { 
                 if (response.status==429){
-                    throw new Error('non è stato possibile scaricare i dati del grafico.')
+                    throw new Error('Unable to download chart data')
                 };
                 return response.json()}
             )
@@ -146,7 +147,7 @@ function App(){
             await fetch(`https://api.coinranking.com/v2/coin/${IdCoin}`,options)
             .then(response => { 
                 if (response.status==429){
-                    throw new Error('non è stato possibile scaricare i dati della criptovaluta.')
+                    throw new Error('Unable to download cryptocurrency data.')
                 };
                 return response.json()
             })
@@ -187,7 +188,7 @@ function App(){
         await fetch(`https://api.coinranking.com/v2/coin/${IdCoin}`,options)
         .then(response => { 
             if (response.status==429){
-                throw new Error('non è stato possibile scaricare i dati della criptovaluta.')
+                throw new Error('Unable to download cryptocurrency data.')
             };
             return response.json()
         })
@@ -198,7 +199,7 @@ function App(){
         await fetch(`https://api.coinranking.com/v2/coin/${IdCoin}/history?timePeriod=${ChartPeriod}`,options)
         .then(response => { 
             if (response.status==429){
-                throw new Error('non è stato possibile scaricare i dati del grafico.')
+                throw new Error('Unable to download chart data')
             };
             return response.json()}
         )
@@ -318,7 +319,7 @@ function App(){
                 }
                 
                 {((errorCoin && errorChartCoin)|| errorChartCoin || errorConnection) &&
-                    <Box sx={{ display: 'flex', justifyContent:'center', alignItems: 'center'}} height={300} width={'auto'}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent:'center', alignItems: 'center'}} height={300} width={'auto'}>
                         <img src={errorLogo} alt="error" /> <br/>
                         {errorChartCoin && errorChartCoin.message} <br/>
                         {errorCoin && errorCoin.message} <br/>
@@ -346,7 +347,7 @@ function App(){
                         }                                
                         }]}
                         series={[{ data: history, showMark: false }]}
-                        height={300} 
+                        height={isMobile? 200 : 300} 
                     />
                 }
 
@@ -502,7 +503,7 @@ function App(){
                     </Grid>}
 
                     {(errorCoin && !errorChartCoin) &&
-                        <Box sx={{ display: 'flex', justifyContent:'center', alignItems: 'center'}} height={300} width={'auto'}>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent:'center', alignItems: 'center'}} height={300} width={'auto'}>
                             <img src={errorLogo} alt="error"/> <br/>
                             {errorCoin && errorCoin.message} <br/>
                             'Please try again later'
@@ -521,8 +522,8 @@ function App(){
                                 sparkLineNumber.pop(),
                                 <Box sx={{display:"flex",flexDirection:{ xs: 'row', md: 'column' }}} alignItems='center' p={1} m={1} bordercolor={"black"} border={3} borderRadius={3} onClick={()=>{ setIdCoin(coin.uuid)}}>
                                     <img src={coin.iconUrl} alt={coin.name} style={{width: 50,height:50, }}/>
-                                    {coin.symbol} 
-                                    <SparkLineChart data={sparkLineNumber} height={30} />
+                                    {coin.symbol}
+                                    {isMobile? null : <SparkLineChart data={sparkLineNumber} height={30} /> }
                                 </Box>
                             ))}
                         </Box>
