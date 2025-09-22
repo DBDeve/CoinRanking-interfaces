@@ -258,25 +258,27 @@ function App(){
         <Grid container spacing={3} border={5} padding={isMobile? 2: 8} backgroundColor={'white'} borderRadius={10}>
             <Grid size={{ xs: 12, md: 9 }} >
                 <Box sx={{ display: 'flex'}}>
-
-                    <Paper component="form" sx={{ p: '2px 4px', display: 'flex', alignItems: 'center'  }}>
-                
-                        <InputBase 
-                            type="text" 
-                            onKeyDown={(event)=>{
-                                if (event.key==='Enter'){
-                                    event.preventDefault();
-                                    setIdCoin(props.dictionary[`${event.target.value}`]);
-                                }
-                            }}
-                            sx={{ ml: 1, flex: 1}} 
-                            placeholder="insert krypto coin name"
-                        />
-                        <IconButton type="button" sx={{ p: '10px' }} aria-label="search" onClick={(event)=>{console.log("input value",event.target.value)}}>
-                            <SearchIcon />
-                        </IconButton>
+                    {/*
+                        <Paper component="form" sx={{ p: '2px 4px', display: 'flex', alignItems: 'center'  }}>
                     
-                    </Paper>
+                            <InputBase 
+                                type="text" 
+                                onKeyDown={(event)=>{
+                                    if (event.key==='Enter'){
+                                        event.preventDefault();
+                                        setIdCoin(props.dictionary[`${event.target.value}`]);
+                                    }
+                                }}
+                                sx={{ ml: 1, flex: 1}} 
+                                placeholder="insert krypto coin name"
+                            />
+                            
+                            <IconButton type="button" sx={{ p: '10px' }} aria-label="search" onClick={(event)=>{console.log("input value",event.target.value)}}>
+                                <SearchIcon />
+                            </IconButton>
+                            
+                        </Paper>
+                    */}
 
                     <Box sx={{ minWidth: 100 }}>
                         <FormControl fullWidth>
