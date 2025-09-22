@@ -348,6 +348,7 @@ function App(){
                         }]}
                         series={[{ data: history, showMark: false }]}
                         height={isMobile? 200 : 300} 
+                        margin={{ top: 55, right: 55, bottom: 55, left: 55 }}
                     />
                 }
 
