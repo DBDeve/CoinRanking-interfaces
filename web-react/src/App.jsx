@@ -278,7 +278,7 @@ function App(){
                             </IconButton>
                             
                         </Paper>
-                    */}
+                   
 
                     <Box sx={{ minWidth: 100 }}>
                         <FormControl fullWidth>
@@ -303,10 +303,7 @@ function App(){
                                 <MenuItem value={"5y"}>5y</MenuItem>
                             </Select> 
                         </FormControl>
-                    </Box>
-
-                    
-
+                    </Box> */}
                 </Box>
 
             
@@ -317,7 +314,32 @@ function App(){
                         <Tooltip sx={{fontSize:15}} title={coinData.description}>
                             <ErrorOutlineIcon />
                         </Tooltip>
+                        <Box sx={{ minWidth: 100 }}>
+                        <FormControl fullWidth>
+                            <InputLabel id="demo-simple-select-label">time period</InputLabel>
+                            <Select
+                            disabled={InProgess? true:false}
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            value={ChartPeriod}
+                            label="time period"
+                            onChange={changeChartPeriod}
+                            >
+                                <MenuItem value={"1h"}>1h</MenuItem>
+                                <MenuItem value={"3h"}>3h</MenuItem>
+                                <MenuItem value={"12h"}>12h</MenuItem>
+                                <MenuItem value={"24h"}>24h</MenuItem>
+                                <MenuItem value={"7d"}>7d</MenuItem>
+                                <MenuItem value={"30d"}>30d</MenuItem>
+                                <MenuItem value={"3m"}>3m</MenuItem>
+                                <MenuItem value={"1y"}>1y</MenuItem>
+                                <MenuItem value={"3y"}>3y</MenuItem>
+                                <MenuItem value={"5y"}>5y</MenuItem>
+                            </Select> 
+                        </FormControl>
+                    </Box>
                     </div>
+                    
                 }
                 
                 {((errorCoin && errorChartCoin)|| errorChartCoin || errorConnection) &&
