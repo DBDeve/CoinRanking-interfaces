@@ -354,7 +354,7 @@ function App(){
 
                 {InProgess &&
                     <div>
-                        <Box sx={{ display: 'flex', justifyContent:'center', alignItems: 'center'}} height={300} width={400}>
+                        <Box sx={{ display: 'flex', justifyContent:'center', alignItems: 'center'}} height={300} width={'auto'}>
                             <CircularProgress />
                         </Box>
                     </div>
